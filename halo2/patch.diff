@@ -1,0 +1,111 @@
+diff --git a/examples/separately.rs b/examples/separately.rs
+index 00c1d84..52db1c5 100644
+--- a/examples/separately.rs
++++ b/examples/separately.rs
+@@ -5,8 +5,17 @@ use halo2_solidity_verifier::{
+     compile_solidity, encode_calldata, BatchOpenScheme::Bdfg21, Evm, Keccak256Transcript,
+     SolidityGenerator,
+ };
++use ruint::{aliases::U256, UintTryFrom};
++use halo2_proofs::{
++    halo2curves::{bn256, ff::PrimeField, CurveAffine},
++    plonk::{Any, Column, ConstraintSystem},
++};
++use std::{
++    borrow::Borrow,
++};
+ 
+-const K_RANGE: Range<u32> = 10..17;
++// const K_RANGE: Range<u32> = 10..17;
++const K_RANGE: Range<u32> = 16..17;
+ 
+ fn main() {
+     let mut rng = seeded_std_rng();
+@@ -28,7 +37,8 @@ fn main() {
+     let deployed_verifier_solidity = verifier_solidity;
+ 
+     for k in K_RANGE {
+-        let num_instances = k as usize;
++        // let num_instances = k as usize;
++        let num_instances = 2usize;
+         let circuit = StandardPlonk::rand(num_instances, &mut rng);
+ 
+         let vk = keygen_vk(&params[&k], &circuit).unwrap();
+@@ -45,14 +55,46 @@ fn main() {
+         let calldata = {
+             let instances = circuit.instances();
+             let proof = create_proof_checked(&params[&k], &pk, circuit, &instances, &mut rng);
++
++            let vk: [u8;20]=vk_address.into();
++            // println!("vk: {}", vec_to_hex_string(vk.to_vec()));
++            println!("proof: {}", vec_to_hex_string(proof.clone()));
++            let ins: Vec<String> = instances.iter().map(fr_to_u256).map(to_u256_be_bytes).map(|x|x.to_vec()).map(vec_to_hex_string).collect();
++            println!("instances: [\"{}\"]", ins.join("\", \""));
++
+             encode_calldata(Some(vk_address.into()), &proof, &instances)
++
+         };
++        // println!("calldata: {:#?}", vec_to_hex_string(calldata));
++
+         let (gas_cost, output) = evm.call(verifier_address, calldata);
+         assert_eq!(output, [vec![0; 31], vec![1]].concat());
+         println!("Gas cost of verifying standard Plonk with 2^{k} rows: {gas_cost}");
+     }
+ }
+ 
++fn vec_to_hex_string(data: Vec<u8>) -> String {
++    format!("0x{}", data.iter().map(|byte| format!("{:02x}", byte)).collect::<String>())
++}
++
++pub(crate) fn fr_to_u256(fe: impl Borrow<bn256::Fr>) -> U256 {
++    fe_to_u256(fe)
++}
++
++pub(crate) fn fe_to_u256<F>(fe: impl Borrow<F>) -> U256
++where
++    F: PrimeField<Repr = [u8; 0x20]>,
++{
++    U256::from_le_bytes(fe.borrow().to_repr())
++}
++
++pub(crate) fn to_u256_be_bytes<T>(value: T) -> [u8; 32]
++where
++    U256: UintTryFrom<T>,
++{
++    U256::from(value).to_be_bytes()
++}
++
+ fn save_solidity(name: impl AsRef<str>, solidity: &str) {
+     const DIR_GENERATED: &str = "./generated";
+ 
+@@ -121,12 +163,14 @@ mod application {
+     pub struct StandardPlonkConfig {
+         selectors: [Column<Fixed>; 5],
+         wires: [Column<Advice>; 3],
++        efixed: [Column<Fixed>; 200],
+     }
+ 
+     impl StandardPlonkConfig {
+         fn configure(meta: &mut ConstraintSystem<impl PrimeField>) -> Self {
+             let [w_l, w_r, w_o] = [(); 3].map(|_| meta.advice_column());
+             let [q_l, q_r, q_o, q_m, q_c] = [(); 5].map(|_| meta.fixed_column());
++            let efixed = [(); 200].map(|_| meta.fixed_column());
+             let pi = meta.instance_column();
+             [w_l, w_r, w_o].map(|column| meta.enable_equality(column));
+             meta.create_gate(
+@@ -150,6 +194,7 @@ mod application {
+             StandardPlonkConfig {
+                 selectors: [q_l, q_r, q_o, q_m, q_c],
+                 wires: [w_l, w_r, w_o],
++                efixed,
+             }
+         }
+     }
+@@ -187,6 +232,7 @@ mod application {
+         ) -> Result<(), Error> {
+             let [q_l, q_r, q_o, q_m, q_c] = config.selectors;
+             let [w_l, w_r, w_o] = config.wires;
++            let efixed = config.efixed;
+             layouter.assign_region(
+                 || "",
+                 |mut region| {
