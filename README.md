@@ -30,7 +30,7 @@ This report provides a comprehensive analysis of gas consumption for various Zer
 
 ## Gas Cost Formulas
 
-On Ethereum, the gas cost formulas for Groth16 and FFLONK verifiers can be expressed as:
+On Ethereum, the gas cost formulas for Groth16 and FFLONK verifiers (snarkjs) can be expressed as:
 
 - Groth16 Gas Cost ≈ 207k + 7.16k × l
 - FFLONK Gas Cost ≈ 200k + 0.9k × l
