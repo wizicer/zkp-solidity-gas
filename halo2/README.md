@@ -1,6 +1,6 @@
 # Halo2 Framework
 
-ref: github.com/privacy-scaling-explorations/halo2-solidity-verifier
+ref: https://github.com/privacy-scaling-explorations/halo2-solidity-verifier
 
 Simulation using rust:
 
@@ -71,15 +71,11 @@ Inputs:
 
 For 2\^16
 
-**Verifier**
+- [Verifier.sol](./plonk_2/verfier.sol)
+- [VerifyingKey.sol](./plonk_2/verifiyingKey.sol)
 
-[](./halo2/plonk_2/verfier.sol)
 
-**VerifyingKey**
-
-[](./halo2/plonk_2/verifiyingKey.sol)
-
-**Parameters**
+### **Parameters**
 
 vk:
 
@@ -109,13 +105,9 @@ Inputs:
 
 For 2\^16
 
-**Verifier**
+- [Verifier.sol](./plonk_2_200/verfier.sol)
+- [VerifyingKey.sol](./plonk_2_200/verifiyingKey.sol)
 
-[](./halo2/plonk_2_200/verfier.sol)
-
-**VerifyingKey**
-
-[](./halo2/plonk_2_200/verifiyingKey.sol)
 
 ### **Parameters**
 

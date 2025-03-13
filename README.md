@@ -41,7 +41,7 @@ Where l represents the length of the public signals. Both systems have similar c
 
 ## Framework Details
 
-For detailed information about each framework, please refer to the respective README files:
+For detailed information and the reproducible code about each framework, please refer to following:
 
 - [Gnark](./gnark/README.md)
 - [Snarkjs](./snarkjs/README.md)
