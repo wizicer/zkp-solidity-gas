@@ -23,6 +23,7 @@ This report provides a comprehensive analysis of gas consumption for various Zer
 | halo2 | plonk(degree:16) | 2 | - | [308,315](https://sepolia.etherscan.io/tx/0x90a3f738dd7e519f6da3ec3a7039dca17efb081023315aa6818db30e506dceeb) + [828,497](https://sepolia.etherscan.io/tx/0xdc4909c90306c8d09d0ffc316239f72d444660e539ffcc33f0fcaf331201e82e) | [305,073](https://sepolia.etherscan.io/tx/0xabe5b457a62f8b8662937b4a103286e2111472600f2aeac1ca97b2434d47ab67) |
 | halo2 | plonk(degree:16, efixed:200) | 2 | - | [2,904,633](https://sepolia.etherscan.io/tx/0xc9ca0641852f4102b2ef8715ae4b1cd31d401b507dce21b6db48bd089883f990) + [841,012](https://sepolia.etherscan.io/tx/0x07b687ca4c31e8e3b297a98250e61c1d45bb3c40466dca35b373283191493c5e) | [307,900](https://sepolia.etherscan.io/tx/0xc50d7c3b3c8ad71208e1fb815e5c7fa67bf0b70f44042e7f288a5e9e13a1fd07) |
 | plonky3 | No solidity verifier | - | - | - | - |
+| nova | groth16 with kzg (compressed proof) | 32 | 750,000 | - | - |
 
 **Notes:**
 - Local VM View Gas: Executed the public view in Remix VM (Cancun)
